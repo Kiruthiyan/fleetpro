@@ -1,0 +1,33 @@
+package com.vfms.backend.controller;
+
+import com.vfms.backend.dto.AuthenticationRequest;
+import com.vfms.backend.dto.AuthenticationResponse;
+import com.vfms.backend.dto.RegisterRequest;
+import com.vfms.backend.service.AuthenticationService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/auth")
+@RequiredArgsConstructor
+public class AuthenticationController {
+
+    private final AuthenticationService service;
+
+    @PostMapping("/register")
+    public ResponseEntity<AuthenticationResponse> register(
+            @RequestBody RegisterRequest request) {
+        System.out.println("DEBUG: Register Request Received for " + request.getUsername());
+        return ResponseEntity.ok(service.register(request));
+    }
+
+    @PostMapping("/authenticate")
+    public ResponseEntity<AuthenticationResponse> authenticate(
+            @RequestBody AuthenticationRequest request) {
+        return ResponseEntity.ok(service.authenticate(request));
+    }
+}
