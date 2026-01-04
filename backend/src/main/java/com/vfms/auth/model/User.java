@@ -44,6 +44,15 @@ public class User implements UserDetails {
     private LocalDate joinedDate;
     private String avatarUrl;
 
+    @Builder.Default
+    private Boolean emailVerified = false;
+
+    private String emailVerificationToken;
+    private java.time.LocalDateTime emailVerificationTokenExpiry;
+
+    private String passwordResetToken;
+    private java.time.LocalDateTime passwordResetTokenExpiry;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
