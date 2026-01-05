@@ -4,18 +4,23 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+    Mail, Lock, ShieldCheck, ArrowRight,
+    UserCircle, Fingerprint, Activity, ChevronLeft
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Mail, Lock, ShieldCheck, ArrowRight, UserCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
 import api from "@/lib/api";
 import { authService } from "@/lib/auth";
+import { cn } from "@/lib/utils";
 
 const loginSchema = z.object({
-    email: z.string().email("Invalid email address"),
-    password: z.string().min(6, "Password must be at least 6 characters"),
+    email: z.string().email("Please enter a valid business email"),
+    password: z.string().min(6, "Security requires at least 6 characters"),
 });
 
 type LoginValues = z.infer<typeof loginSchema>;
@@ -26,29 +31,27 @@ interface SlidingAuthPageProps {
 
 export default function SlidingAuthPage({ initialMode = "login" }: SlidingAuthPageProps) {
     const router = useRouter();
-    const [isSignUp, setIsSignUp] = useState(initialMode === "signup");
-
-    // Login State
+    // Map 'signup' mode to InfoMode (Registration Help/Restricted Access view)
+    const [isInfoMode, setIsInfoMode] = useState(initialMode === "signup");
     const [loginError, setLoginError] = useState("");
     const [loginLoading, setLoginLoading] = useState(false);
+
     const {
-        register: registerLogin,
-        handleSubmit: handleSubmitLogin,
-        formState: { errors: loginErrors }
+        register,
+        handleSubmit,
+        formState: { errors }
     } = useForm<LoginValues>({
         resolver: zodResolver(loginSchema),
-        defaultValues: { email: "", password: "" },
     });
 
-    // Redirect if already authenticated
+    // Check Auth
     useEffect(() => {
         if (authService.isAuthenticated()) {
             const role = authService.getRole();
-            if (role === "ADMIN") router.push("/dashboard/admin");
-            else if (role === "DRIVER") router.push("/dashboard/driver");
-            else if (role === "STAFF") router.push("/dashboard/staff");
-            else if (role === "APPROVER") router.push("/dashboard/approver");
-            else router.push("/dashboard");
+            const route = role === "ADMIN" ? "/dashboard/admin" :
+                role === "DRIVER" ? "/dashboard/driver" :
+                    "/dashboard";
+            router.push(route);
         }
     }, [router]);
 
@@ -56,193 +59,204 @@ export default function SlidingAuthPage({ initialMode = "login" }: SlidingAuthPa
         setLoginError("");
         setLoginLoading(true);
         try {
-            const response = await api.post("/auth/authenticate", {
-                email: data.email,
-                password: data.password,
-            });
-            const authResponse = response.data;
-            authService.setAuth(authResponse);
-
-            if (authResponse.role === "ADMIN") router.push("/dashboard/admin");
-            else if (authResponse.role === "DRIVER") router.push("/dashboard/driver");
-            else if (authResponse.role === "STAFF") router.push("/dashboard/staff");
-            else if (authResponse.role === "APPROVER") router.push("/dashboard/approver");
-            else router.push("/dashboard");
+            const response = await api.post("/auth/authenticate", data);
+            authService.setAuth(response.data);
+            router.push(response.data.role === "ADMIN" ? "/dashboard/admin" : "/dashboard");
         } catch (err: any) {
-            setLoginError(err.response?.data?.message || "Invalid username or password.");
+            setLoginError(err.response?.data?.message || "Invalid credentials. Access denied.");
         } finally {
             setLoginLoading(false);
         }
     };
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-slate-100 p-4 font-sans overflow-hidden relative">
-            {/* Background Details */}
-            <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
-            <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-400/20 blur-[120px]" />
-            <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-slate-400/20 blur-[120px]" />
+        <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center p-4 overflow-hidden relative selection:bg-amber-100">
+            {/* Ambient Background */}
+            <div className="absolute inset-0 z-0">
+                <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-amber-100/50 rounded-full blur-[120px] animate-pulse" />
+                <div className="absolute bottom-[-5%] left-[-5%] w-[400px] h-[400px] bg-slate-200/50 rounded-full blur-[100px]" />
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.03]" />
+            </div>
 
-            <div className={`auth-container ${isSignUp ? "right-panel-active" : ""} relative w-[1000px] max-w-full min-h-[640px] bg-white rounded-3xl shadow-2xl overflow-hidden z-20`}>
+            {/* Main Auth Card */}
+            <motion.div
+                layout
+                className="relative w-full max-w-[1000px] min-h-[650px] bg-white rounded-[2.5rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.12)] border border-white flex overflow-hidden z-10"
+            >
+                {/* --- OVERLAY PANEL (The Sliding Part) --- */}
+                <motion.div
+                    animate={{ x: isInfoMode ? "100%" : "0%" }}
+                    transition={{ type: "spring", stiffness: 40, damping: 15 }}
+                    className="absolute top-0 left-0 w-1/2 h-full bg-slate-900 z-50 hidden md:block overflow-hidden"
+                >
+                    <div className="relative h-full w-full p-12 flex flex-col justify-center text-white">
+                        {/* Background mesh inside overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-br from-amber-600/20 to-transparent opacity-50" />
 
-                {/* LOGIN FORM (Left Side / Form Container) */}
-                <div className="form-container sign-in-container absolute top-0 h-full transition-all duration-700 ease-in-out left-0 w-1/2 z-2 flex flex-col justify-center">
-                    <form onSubmit={handleSubmitLogin(onLoginSubmit)} className="bg-white flex flex-col items-center justify-center h-full px-12 sm:px-16 text-center space-y-6">
-                        <div className="w-full text-left -mt-4">
-                            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Welcome Back</h1>
-                            <p className="text-slate-500 mt-2 text-sm">Please enter your details to sign in.</p>
+                        <AnimatePresence mode="wait">
+                            {!isInfoMode ? (
+                                <motion.div
+                                    key="login-text"
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -20 }}
+                                    className="relative z-10"
+                                >
+                                    <div className="w-16 h-16 bg-amber-500/20 backdrop-blur-lg rounded-2xl flex items-center justify-center mb-8 border border-white/10">
+                                        <Fingerprint className="w-8 h-8 text-amber-400" />
+                                    </div>
+                                    <h2 className="text-4xl font-black tracking-tight mb-4">Secure <br />Entry Point.</h2>
+                                    <p className="text-slate-400 font-medium mb-10 leading-relaxed">
+                                        Access the Vehicle Fleet Management System. Enterprise-grade security for your logistics data.
+                                    </p>
+                                    <Button
+                                        onClick={() => setIsInfoMode(true)}
+                                        variant="outline"
+                                        className="rounded-full border-white/20 text-white hover:bg-white hover:text-slate-900 font-bold px-8"
+                                    >
+                                        Registration Help?
+                                    </Button>
+                                </motion.div>
+                            ) : (
+                                <motion.div
+                                    key="info-text"
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -20 }}
+                                    className="relative z-10"
+                                >
+                                    <div className="w-16 h-16 bg-slate-800 backdrop-blur-lg rounded-2xl flex items-center justify-center mb-8 border border-white/10">
+                                        <ShieldCheck className="w-8 h-8 text-amber-400" />
+                                    </div>
+                                    <h2 className="text-4xl font-black tracking-tight mb-4">Restricted <br />Access.</h2>
+                                    <p className="text-slate-400 font-medium mb-10 leading-relaxed">
+                                        To maintain data integrity, account creation is managed by your fleet supervisor.
+                                    </p>
+                                    <Button
+                                        onClick={() => setIsInfoMode(false)}
+                                        className="rounded-full bg-white text-slate-900 hover:bg-amber-50 font-bold px-8"
+                                    >
+                                        Back to Login
+                                    </Button>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
+                </motion.div>
+
+                {/* --- LEFT SIDE: LOGIN FORM --- */}
+                <div className="w-full md:w-1/2 p-8 md:p-16 flex flex-col justify-center">
+                    <form onSubmit={handleSubmit(onLoginSubmit)} className="space-y-6 max-w-sm mx-auto w-full">
+                        <div className="space-y-2">
+                            <h1 className="text-3xl font-black text-slate-900 tracking-tight">Sign In</h1>
+                            <p className="text-slate-500 text-sm font-medium">Welcome back to the portal.</p>
                         </div>
 
-                        <div className="w-full space-y-5">
-                            <div className="space-y-2 text-left">
-                                <Label className="text-xs font-bold uppercase text-slate-500 tracking-wider">Email Address</Label>
-                                <div className="relative group">
-                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <Mail className="h-5 w-5 text-slate-400 group-focus-within:text-blue-600 transition-colors" />
-                                    </div>
+                        <div className="space-y-4">
+                            <div className="space-y-2">
+                                <Label className="text-[10px] uppercase tracking-[0.2em] font-black text-slate-400">Email Address</Label>
+                                <div className="relative">
+                                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                                     <Input
-                                        {...registerLogin("email")}
-                                        placeholder="name@company.com"
-                                        className="pl-11 h-12 bg-slate-50 border-slate-200 text-slate-900 rounded-xl focus:border-blue-600 focus:ring-blue-600 transition-all font-medium"
+                                        {...register("email")}
+                                        className="pl-11 h-12 bg-slate-50 border-slate-200 focus:bg-white transition-all rounded-xl"
+                                        placeholder="admin@fleet.com"
                                     />
                                 </div>
-                                {loginErrors.email && <p className="text-xs text-red-500 font-medium ml-1">{loginErrors.email.message}</p>}
+                                {errors.email && <span className="text-[10px] text-red-500 font-bold">{errors.email.message}</span>}
                             </div>
 
-                            <div className="space-y-2 text-left">
-                                <Label className="text-xs font-bold uppercase text-slate-500 tracking-wider">Password</Label>
-                                <div className="relative group">
-                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <Lock className="h-5 w-5 text-slate-400 group-focus-within:text-blue-600 transition-colors" />
-                                    </div>
+                            <div className="space-y-2">
+                                <div className="flex justify-between">
+                                    <Label className="text-[10px] uppercase tracking-[0.2em] font-black text-slate-400">Password</Label>
+                                    <button type="button" className="text-[10px] font-black uppercase text-amber-600 hover:underline">Forgot?</button>
+                                </div>
+                                <div className="relative">
+                                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                                     <Input
-                                        {...registerLogin("password")}
+                                        {...register("password")}
                                         type="password"
+                                        className="pl-11 h-12 bg-slate-50 border-slate-200 focus:bg-white transition-all rounded-xl"
                                         placeholder="••••••••"
-                                        className="pl-11 h-12 bg-slate-50 border-slate-200 text-slate-900 rounded-xl focus:border-blue-600 focus:ring-blue-600 transition-all font-medium"
                                     />
                                 </div>
-                                {loginErrors.password && <p className="text-xs text-red-500 font-medium ml-1">{loginErrors.password.message}</p>}
+                                {errors.password && <span className="text-[10px] text-red-500 font-bold">{errors.password.message}</span>}
                             </div>
                         </div>
 
-                        <div className="flex items-center justify-between w-full text-sm">
-                            <div className="flex items-center space-x-2">
-                                <Checkbox id="remember" className="rounded border-slate-300 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600" />
-                                <Label htmlFor="remember" className="text-slate-600 font-medium cursor-pointer select-none">Remember for 30 days</Label>
-                            </div>
-                            <Button variant="ghost" className="text-blue-600 p-0 h-auto font-bold hover:text-blue-800 hover:bg-transparent" onClick={(e) => { e.preventDefault(); router.push('/auth/forgot-password'); }}>
-                                Forgot password?
-                            </Button>
+                        <div className="flex items-center space-x-2 py-2">
+                            <Checkbox id="remember" className="rounded-md border-slate-300" />
+                            <label htmlFor="remember" className="text-xs font-bold text-slate-600 cursor-pointer">Keep me logged in</label>
                         </div>
 
                         {loginError && (
-                            <div className="w-full bg-red-50 border border-red-100 text-red-600 px-4 py-3 rounded-lg text-sm font-medium flex items-center gap-2">
-                                <span className="block w-2 h-2 rounded-full bg-red-500 shrink-0"></span>
-                                {loginError}
-                            </div>
+                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-3 rounded-xl bg-red-50 border border-red-100 text-red-600 text-xs font-bold flex items-center gap-2">
+                                <Activity className="w-3 h-3" /> {loginError}
+                            </motion.div>
                         )}
 
-                        <Button disabled={loginLoading} type="submit" className="w-full h-12 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:translate-y-[-1px] transition-all duration-200 flex items-center justify-center gap-2 text-base group">
-                            {loginLoading ? "Authenticating..." : "Sign In"}
-                            {!loginLoading && <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />}
+                        <Button
+                            disabled={loginLoading}
+                            className="w-full h-14 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl font-black text-sm transition-all shadow-xl shadow-slate-200"
+                        >
+                            {loginLoading ? "Verifying..." : "Access Dashboard"}
+                            {!loginLoading && <ArrowRight className="ml-2 w-4 h-4" />}
                         </Button>
 
-                        <p className="text-xs text-slate-400 mt-4">
-                            Protected by reCAPTCHA and subject to the Privacy Policy.
-                        </p>
+                        <div className="md:hidden pt-4 text-center">
+                            <button
+                                onClick={() => setIsInfoMode(true)}
+                                className="text-xs font-bold text-amber-600"
+                            >
+                                How do I register?
+                            </button>
+                        </div>
                     </form>
                 </div>
 
-                {/* ACCOUNT SETUP INFO (Right Side Info / Toggled Left) */}
-                <div className="form-container sign-up-container absolute top-0 h-full transition-all duration-700 ease-in-out left-0 w-1/2 opacity-0 z-1 flex flex-col justify-center">
-                    <div className="bg-white flex flex-col items-center justify-center h-full px-12 sm:px-16 text-center space-y-8">
-                        <div className="w-full text-left">
-                            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Account Access</h1>
-                            <p className="text-slate-500 mt-2 text-sm">Follow these steps to obtain login credentials.</p>
+                {/* --- RIGHT SIDE: INFO CONTENT --- */}
+                <div className="w-full md:w-1/2 p-8 md:p-16 flex flex-col justify-center bg-white">
+                    <div className="max-w-sm mx-auto w-full space-y-8">
+                        <div className="space-y-2">
+                            <h2 className="text-3xl font-black text-slate-900 tracking-tight">Need an Account?</h2>
+                            <p className="text-slate-500 text-sm font-medium">Follow our registration protocol.</p>
                         </div>
 
-                        <div className="w-full bg-blue-50/50 border border-blue-100 rounded-2xl p-6 text-left shadow-sm">
-                            <div className="flex items-start gap-4">
-                                <div className="bg-blue-100 p-2 rounded-lg">
-                                    <ShieldCheck className="h-6 w-6 text-blue-600" />
+                        <div className="space-y-6">
+                            {[
+                                { step: "01", title: "Internal Request", text: "Submit your Employee ID to the Fleet Admin." },
+                                { step: "02", title: "Verification", text: "Receive a one-time setup link via work email." },
+                                { step: "03", title: "Key Generation", text: "Configure your biometrics or secure password." }
+                            ].map((item, idx) => (
+                                <div key={idx} className="flex gap-4 group">
+                                    <div className="text-xl font-black text-slate-200 group-hover:text-amber-500 transition-colors">{item.step}</div>
+                                    <div>
+                                        <h4 className="text-sm font-black text-slate-900">{item.title}</h4>
+                                        <p className="text-xs text-slate-400 font-medium leading-relaxed">{item.text}</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <h3 className="font-bold text-blue-900 text-sm">Enterprise Security</h3>
-                                    <p className="text-xs text-blue-700/80 leading-relaxed mt-1.5 font-medium">
-                                        This system uses restricted role-based access. Self-registration is disabled to maintain fleet data integrity.
-                                    </p>
-                                </div>
+                            ))}
+                        </div>
+
+                        <div className="p-6 bg-slate-50 rounded-[2rem] border border-slate-100 flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
+                                <ShieldCheck className="w-5 h-5 text-amber-600" />
                             </div>
+                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                                ISO 27001 Certified System
+                            </p>
                         </div>
 
-                        <div className="w-full text-left space-y-4">
-                            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Access Request Workflow</h4>
-                            <div className="space-y-4">
-                                <div className="flex items-center gap-4 group">
-                                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-sm font-bold text-slate-500 group-hover:bg-blue-600 group-hover:text-white transition-colors">1</div>
-                                    <span className="text-sm font-medium text-slate-700">Contact System Administrator</span>
-                                </div>
-                                <div className="flex items-center gap-4 group">
-                                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-sm font-bold text-slate-500 group-hover:bg-blue-600 group-hover:text-white transition-colors">2</div>
-                                    <span className="text-sm font-medium text-slate-700">Provide Employee ID & Role</span>
-                                </div>
-                                <div className="flex items-center gap-4 group">
-                                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-sm font-bold text-slate-500 group-hover:bg-blue-600 group-hover:text-white transition-colors">3</div>
-                                    <span className="text-sm font-medium text-slate-700">Receive Verification Email</span>
-                                </div>
-                                <div className="flex items-center gap-4 group">
-                                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-sm font-bold text-slate-500 group-hover:bg-blue-600 group-hover:text-white transition-colors">4</div>
-                                    <span className="text-sm font-medium text-slate-700">Set Secure Password</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <Button onClick={() => setIsSignUp(false)} variant="outline" className="w-full h-12 border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50 font-bold rounded-xl mt-4">
-                            Return to Sign In
+                        <Button
+                            onClick={() => setIsInfoMode(false)}
+                            variant="ghost"
+                            className="md:hidden w-full font-black text-slate-900"
+                        >
+                            <ChevronLeft className="mr-2 w-4 h-4" /> Back to Login
                         </Button>
                     </div>
                 </div>
-
-                {/* OVERLAY CONTAINER */}
-                <div className="overlay-container absolute top-0 left-1/2 w-1/2 h-full overflow-hidden transition-transform duration-700 ease-in-out z-50 rounded-l-[40px] md:rounded-l-[0px]">
-                    <div className="overlay bg-slate-900 text-white relative -left-full h-full w-[200%] transform transition-transform duration-700 ease-in-out">
-                        {/* Gradient Backgrounds */}
-                        <div className="absolute inset-0 bg-slate-900"></div>
-                        <div className="absolute inset-0 bg-gradient-to-br from-slate-800 to-blue-900 opacity-100"></div>
-                        <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-blue-500 rounded-full blur-[128px] opacity-40"></div>
-                        <div className="absolute -top-24 -right-24 w-96 h-96 bg-cyan-500 rounded-full blur-[128px] opacity-40"></div>
-
-                        {/* Overlay Left (For Signup State -> Shows "Have Account?") */}
-                        <div className={`overlay-panel overlay-left absolute flex items-center justify-center flex-col p-12 text-center top-0 h-full w-1/2 transform transition-transform duration-700 ease-in-out ${isSignUp ? "translate-x-0" : "-translate-x-[20%]"}`}>
-                            <div className="bg-white/10 backdrop-blur-xl p-6 rounded-3xl mb-8 shadow-2xl border border-white/20 ring-1 ring-white/10">
-                                <UserCircle className="h-14 w-14 text-white" />
-                            </div>
-                            <h1 className="text-4xl font-bold mb-4 tracking-tight">Access Required?</h1>
-                            <p className="text-blue-100/90 text-sm leading-relaxed mb-8 max-w-[280px] mx-auto font-medium">
-                                If you have already set up your account, please proceed to login.
-                            </p>
-                            <Button onClick={() => setIsSignUp(false)} className="rounded-full px-10 py-6 h-auto bg-white text-blue-900 hover:bg-blue-50 font-bold border-0 shadow-lg hover:shadow-xl transition-all shadow-black/20 text-base">
-                                Sign In Now
-                            </Button>
-                        </div>
-
-                        {/* Overlay Right (For Login State -> Shows "Need Account?") */}
-                        <div className={`overlay-panel overlay-right absolute right-0 flex items-center justify-center flex-col p-12 text-center top-0 h-full w-1/2 transform transition-transform duration-700 ease-in-out ${isSignUp ? "translate-x-[20%]" : "translate-x-0"}`}>
-                            <div className="bg-white/10 backdrop-blur-xl p-6 rounded-3xl mb-8 shadow-2xl border border-white/20 ring-1 ring-white/10">
-                                <ShieldCheck className="h-14 w-14 text-white" />
-                            </div>
-                            <h1 className="text-4xl font-bold mb-4 tracking-tight">New to VFMS?</h1>
-                            <p className="text-blue-100/90 text-sm leading-relaxed mb-8 max-w-[280px] mx-auto font-medium">
-                                Account creation is restricted to administrators to ensure fleet security.
-                            </p>
-                            <Button onClick={() => setIsSignUp(true)} className="rounded-full px-10 py-6 h-auto bg-transparent border-2 border-white text-white hover:bg-white/10 font-bold shadow-lg transition-all text-base">
-                                How to Register
-                            </Button>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
+            </motion.div>
         </div>
     );
 }
