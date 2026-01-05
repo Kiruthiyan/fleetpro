@@ -2,65 +2,80 @@
 
 @layer base {
   :root {
+    /* UOM Primary: #FFB401 (Amber) -> HSL: 42 100% 50% */
+    --primary: 42 100% 50%;
+    --primary-foreground: 0 0% 0%;
+    /* Black text on Yellow */
+
+    /* UOM Secondary: #953002 (Rust) -> HSL: 19 97% 30% */
+    --secondary: 19 97% 30%;
+    --secondary-foreground: 0 0% 100%;
+    /* White text on Rust */
+
+    /* UOM Accent: Using Primary for now, or State Warning #E2B93B */
+    --accent: 42 100% 50%;
+    --accent-foreground: 0 0% 0%;
+
+    /* UOM Error: #EB5757 */
+    --destructive: 360 81% 63%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* UOM Black/Gray Scale */
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* White */
+    --foreground: 0 0% 20%;
+    /* Gray 1 #333333 = 0 0% 20% */
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 0 0% 20%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 0 0% 20%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --muted: 0 0% 96%;
+    /* Gray 6 equivalent */
+    --muted-foreground: 0 0% 45%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 0 0% 88%;
+    /* Gray 5 #E0E0E0 */
+    --input: 0 0% 88%;
+    --ring: 42 100% 50%;
+    /* Ring matches Primary */
 
     --radius: 0.5rem;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    /* Adapting UOM colors for Dark Mode (Not strictly defined, inferring) */
+    --background: 0 0% 11%;
+    /* Black 2 #1D1D1D */
+    --foreground: 0 0% 100%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 0 0% 16%;
+    /* Black 3 #282828 */
+    --card-foreground: 0 0% 100%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 0 0% 16%;
+    --popover-foreground: 0 0% 100%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 42 100% 50%;
+    --primary-foreground: 0 0% 0%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 19 97% 30%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 0 0% 20%;
+    --muted-foreground: 0 0% 60%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 42 100% 50%;
+    --accent-foreground: 0 0% 0%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 360 81% 63%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 42 100% 50%;
   }
 }
 
@@ -76,8 +91,8 @@
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
   font-family: var(--font-sans), system-ui, sans-serif;
 }
 
@@ -108,7 +123,7 @@ body {
 }
 
 .dark .glass-panel {
-  background: rgba(17, 24, 39, 0.7);
+  background: rgba(29, 29, 29, 0.7);
   border: 1px solid rgba(255, 255, 255, 0.05);
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
 }
@@ -156,4 +171,40 @@ body {
 
 .auth-container.right-panel-active .overlay-right {
   transform: translateX(20%);
+}
+
+/* Utility Animations */
+.animate-gradient-slow {
+  background-size: 200% 200%;
+  animation: gradient 8s ease infinite;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse 6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: .5;
+  }
 }
