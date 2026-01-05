@@ -523,8 +523,12 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 3.7 SYSTEM WORKFLOW (White Background) */}
-      <section className="py-32 bg-white relative overflow-hidden">
+      {/* 3.7 SYSTEM WORKFLOW (Premium Dark & Glow) */}
+      <section className="py-32 bg-slate-950 relative overflow-hidden">
+        {/* Background Effects */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black opacity-80 pointer-events-none"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-primary/5 rounded-full blur-[120px] pointer-events-none animate-pulse-slow"></div>
+
         <div className="container mx-auto px-6 max-w-5xl relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -532,28 +536,28 @@ export default function HomePage() {
             transition={{ duration: 0.8 }}
             className="text-center mb-24"
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 text-slate-500 text-xs font-bold uppercase tracking-wider mb-4">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-900/50 border border-white/10 text-primary text-xs font-bold uppercase tracking-wider mb-6 backdrop-blur-sm shadow-xl shadow-primary/5">
               <Clock className="w-3 h-3" /> Real-time Sync
             </div>
-            <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-6">Seamless Workflow</h2>
-            <p className="text-xl text-slate-500">From request to reporting, everything flows automatically.</p>
+            <h2 className="text-4xl md:text-5xl font-black text-white mb-6 tracking-tight">Seamless Workflow</h2>
+            <p className="text-xl text-slate-400 max-w-2xl mx-auto">From request to reporting, everything flows automatically through our intelligent core.</p>
           </motion.div>
 
           <div className="space-y-12 relative">
-            {/* Connecting Line - Animated */}
+            {/* Connecting Line - Glowing */}
             <motion.div
               initial={{ scaleY: 0 }}
               whileInView={{ scaleY: 1 }}
               transition={{ duration: 1.5, ease: "easeInOut" }}
-              className="absolute left-6 md:left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-slate-200 via-primary to-slate-200 origin-top -translate-x-1/2 hidden md:block"
+              className="absolute left-6 md:left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-slate-800 via-primary to-slate-800 origin-top -translate-x-1/2 hidden md:block shadow-[0_0_15px_rgba(255,180,1,0.5)]"
             />
 
             {[
-              { title: 'Request', desc: 'User logs in and requests a trip instantly via the portal.', icon: Smartphone, color: 'text-secondary' },
-              { title: 'Review', desc: 'Approver validates vehicle availability and budget impact.', icon: CheckCircle2, color: 'text-primary' },
-              { title: 'Assignment', desc: 'Smart algorithm suggests the best Vehicle and Driver.', icon: Truck, color: 'text-secondary' },
-              { title: 'Execution', desc: 'Trip is completed, tracked via GPS, and logged.', icon: MapPin, color: 'text-primary' },
-              { title: 'Analysis', desc: 'Data flows into reports for actionable cost insights.', icon: BarChart3, color: 'text-secondary' }
+              { title: 'Request', desc: 'User logs in and requests a trip instantly via the portal.', icon: Smartphone, color: 'text-primary' },
+              { title: 'Review', desc: 'Approver validates vehicle availability and budget impact.', icon: CheckCircle2, color: 'text-white' },
+              { title: 'Assignment', desc: 'Smart algorithm suggests the best Vehicle and Driver.', icon: Truck, color: 'text-primary' },
+              { title: 'Execution', desc: 'Trip is completed, tracked via GPS, and logged.', icon: MapPin, color: 'text-white' },
+              { title: 'Analysis', desc: 'Data flows into reports for actionable cost insights.', icon: BarChart3, color: 'text-primary' }
             ].map((step, i) => (
               <motion.div
                 key={i}
@@ -563,21 +567,23 @@ export default function HomePage() {
                 transition={{ duration: 0.8, delay: i * 0.1 }}
                 className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group"
               >
-                {/* Center Node */}
-                <div className="absolute left-6 md:left-1/2 -translate-x-1/2 w-12 h-12 rounded-full border-[6px] border-white bg-slate-100 shadow-xl flex items-center justify-center z-10 group-hover:bg-primary group-hover:scale-125 transition-all duration-300">
-                  <div className="w-3 h-3 bg-slate-300 rounded-full group-hover:bg-black transition-colors"></div>
+                {/* Center Node - Glowing */}
+                <div className="absolute left-6 md:left-1/2 -translate-x-1/2 w-14 h-14 rounded-full border-[4px] border-slate-950 bg-slate-900 shadow-2xl flex items-center justify-center z-10 group-hover:scale-110 transition-all duration-300">
+                  <div className="w-full h-full rounded-full bg-slate-800 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                    <div className="w-3 h-3 bg-primary rounded-full shadow-[0_0_10px_rgba(255,180,1,0.8)]"></div>
+                  </div>
                 </div>
 
-                {/* Content Card */}
-                <div className="w-[calc(100%-4rem)] md:w-[calc(50%-4rem)] ml-20 md:ml-0 bg-white p-8 rounded-3xl border border-slate-100 shadow-lg hover:shadow-2xl hover:-translate-y-2 hover:border-primary/50 transition-all duration-300 group-hover:bg-yellow-50/10">
+                {/* Content Card - Glassmorphism */}
+                <div className="w-[calc(100%-4rem)] md:w-[calc(50%-5rem)] ml-20 md:ml-0 bg-white/5 backdrop-blur-md p-8 rounded-3xl border border-white/5 shadow-xl hover:shadow-primary/10 hover:border-primary/30 transition-all duration-300 group-hover:-translate-y-1">
                   <div className="flex items-center gap-4 mb-4">
-                    <div className="w-12 h-12 rounded-2xl bg-slate-50 border border-slate-100 shadow-sm flex items-center justify-center group-hover:bg-white transition-colors">
+                    <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                       <step.icon className={cn("h-6 w-6 transition-colors", step.color)} />
                     </div>
-                    <span className="text-xs font-bold uppercase tracking-widest text-slate-300 group-hover:text-primary transition-colors">Step 0{i + 1}</span>
+                    <span className="text-xs font-bold uppercase tracking-widest text-slate-500 group-hover:text-primary transition-colors">Step 0{i + 1}</span>
                   </div>
-                  <h4 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-black transition-colors">{step.title}</h4>
-                  <p className="text-slate-500 leading-relaxed font-medium text-sm">{step.desc}</p>
+                  <h4 className="text-xl font-bold text-white mb-2">{step.title}</h4>
+                  <p className="text-slate-400 leading-relaxed font-medium text-sm">{step.desc}</p>
                 </div>
               </motion.div>
             ))}
