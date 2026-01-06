@@ -1,9 +1,15 @@
 const TOKEN_KEY = "auth_token"
 const ROLE_KEY = "auth_role"
+const NAME_KEY = "auth_name"
+const EMAIL_KEY = "auth_email"
+const ID_KEY = "auth_id"
 
 export interface AuthResponse {
   token: string
   role: string
+  name: string
+  email: string
+  id: number
 }
 
 export const authService = {
@@ -12,6 +18,9 @@ export const authService = {
     if (typeof window !== "undefined") {
       localStorage.setItem(TOKEN_KEY, response.token)
       localStorage.setItem(ROLE_KEY, response.role)
+      localStorage.setItem(NAME_KEY, response.name)
+      localStorage.setItem(EMAIL_KEY, response.email)
+      localStorage.setItem(ID_KEY, response.id.toString())
     }
   },
 
@@ -31,6 +40,19 @@ export const authService = {
     return null
   },
 
+  // Get full user details
+  getUser: () => {
+    if (typeof window !== "undefined") {
+      return {
+        id: localStorage.getItem(ID_KEY),
+        name: localStorage.getItem(NAME_KEY),
+        email: localStorage.getItem(EMAIL_KEY),
+        role: localStorage.getItem(ROLE_KEY)
+      }
+    }
+    return null
+  },
+
   // Check if user is authenticated
   isAuthenticated: (): boolean => {
     return authService.getToken() !== null
@@ -46,6 +68,9 @@ export const authService = {
     if (typeof window !== "undefined") {
       localStorage.removeItem(TOKEN_KEY)
       localStorage.removeItem(ROLE_KEY)
+      localStorage.removeItem(NAME_KEY)
+      localStorage.removeItem(EMAIL_KEY)
+      localStorage.removeItem(ID_KEY)
     }
   },
 

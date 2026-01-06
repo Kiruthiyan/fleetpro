@@ -33,7 +33,7 @@ public class AuthenticationService {
                 .name(request.getName())
                 .email(request.getEmail())
                 .role(request.getRole())
-                .emailVerified(false)
+                .emailVerified(true) // Auto-verify for now since email service is not live
                 .password(passwordEncoder.encode(request.getPassword() != null ? request.getPassword() : "temp1234")) // Preliminary password
                 .emailVerificationToken(java.util.UUID.randomUUID().toString())
                 .emailVerificationTokenExpiry(java.time.LocalDateTime.now().plusDays(1))
@@ -47,6 +47,9 @@ public class AuthenticationService {
         return AuthenticationResponse.builder()
                 .token(null) // No token yet, user must verify
                 .role(user.getRole().name())
+                .name(user.getName())
+                .email(user.getEmail())
+                .id(user.getId())
                 .build();
     }
 
@@ -80,6 +83,9 @@ public class AuthenticationService {
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .role(user.getRole().name())
+                .name(user.getName())
+                .email(user.getEmail())
+                .id(user.getId())
                 .build();
     }
 
@@ -91,14 +97,19 @@ public class AuthenticationService {
         var user = repository.findByEmail(request.getEmail())
                 .orElseThrow();
         
+        /*
         if (!user.getEmailVerified()) {
             throw new RuntimeException("Email not verified. Please check your email.");
         }
+        */
 
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .role(user.getRole().name())
+                .name(user.getName())
+                .email(user.getEmail())
+                .id(user.getId())
                 .build();
     }
 

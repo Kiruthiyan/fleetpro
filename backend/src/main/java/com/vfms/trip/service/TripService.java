@@ -16,6 +16,18 @@ public class TripService {
         return repository.findAll();
     }
 
+    public List<Trip> getTripsByDriver(Integer driverId) {
+        return repository.findByDriverId(driverId);
+    }
+
+    public List<Trip> getTripsByRequester(Integer requesterId) {
+        return repository.findByRequesterId(requesterId);
+    }
+
+    public List<Trip> getTripsByStatus(com.vfms.trip.model.TripStatus status) {
+        return repository.findByStatus(status);
+    }
+
     public Trip getTripById(Integer id) {
         return repository.findById(id).orElseThrow(() -> new RuntimeException("Trip not found"));
     }

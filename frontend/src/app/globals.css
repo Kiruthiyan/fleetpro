@@ -2,22 +2,23 @@
 
 @layer base {
   :root {
-    /* UOM Primary: #FFB401 (Amber) -> HSL: 42 100% 50% */
+    /* UOM Primary: #FFB401 (Amber) */
     --primary: 42 100% 50%;
     --primary-foreground: 0 0% 0%;
-    /* Black text on Yellow */
 
-    /* UOM Secondary: #953002 (Rust) -> HSL: 19 97% 30% */
+    /* UOM Secondary: #953002 (Rust) */
     --secondary: 19 97% 30%;
     --secondary-foreground: 0 0% 100%;
-    /* White text on Rust */
 
-    /* UOM Accent: Using Primary for now, or State Warning #E2B93B */
-    --accent: 42 100% 50%;
-    --accent-foreground: 0 0% 0%;
-
-    /* UOM Error: #EB5757 */
-    --destructive: 360 81% 63%;
+    /* UOM State Colors */
+    --info: 214 84% 56%;
+    /* #2F80ED */
+    --success: 145 63% 42%;
+    /* #27AE60 */
+    --warning: 42 74% 56%;
+    /* #E2B93B */
+    --destructive: 360 79% 63%;
+    /* #EB5757 */
     --destructive-foreground: 0 0% 100%;
 
     /* UOM Black/Gray Scale */

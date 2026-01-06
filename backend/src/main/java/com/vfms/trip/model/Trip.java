@@ -37,6 +37,10 @@ public class Trip {
     @JoinColumn(name = "vehicle_id")
     private Vehicle vehicle;
 
+    @ManyToOne
+    @JoinColumn(name = "requester_id")
+    private User requester;
+
     // Distance string e.g. "32 km" (from frontend mock)
     private String distance;
 }

@@ -14,15 +14,15 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const Comp = asChild ? Slot : "button"
 
     // Premium Base Styles
-    const baseStyles = "inline-flex items-center justify-center whitespace-nowrap rounded-xl text-sm font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 disabled:pointer-events-none disabled:opacity-50 active:scale-95"
+    const baseStyles = "inline-flex items-center justify-center whitespace-nowrap rounded-xl text-sm font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 active:scale-95"
 
     const variants = {
-      default: "bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 hover:-translate-y-0.5 border border-transparent",
-      destructive: "bg-gradient-to-r from-red-600 to-red-700 text-white shadow-lg shadow-red-500/30 hover:shadow-xl hover:shadow-red-500/40 hover:-translate-y-0.5",
-      outline: "border-2 border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300 shadow-sm",
-      secondary: "bg-slate-100 text-slate-900 hover:bg-slate-200 shadow-sm border border-slate-200",
-      ghost: "hover:bg-slate-100/80 hover:text-slate-900 text-slate-600",
-      link: "text-blue-600 underline-offset-4 hover:underline",
+      default: "bg-primary text-primary-foreground shadow-lg shadow-amber-500/20 hover:shadow-xl hover:shadow-amber-500/30 hover:-translate-y-0.5 border border-transparent",
+      destructive: "bg-destructive text-destructive-foreground shadow-lg shadow-red-500/30 hover:shadow-xl hover:shadow-red-500/40 hover:-translate-y-0.5",
+      outline: "border-2 border-slate-200 bg-white text-slate-700 hover:bg-amber-50 hover:text-slate-900 hover:border-amber-200 shadow-sm",
+      secondary: "bg-secondary text-secondary-foreground shadow-sm hover:opacity-90",
+      ghost: "hover:bg-slate-100 hover:text-slate-900 text-slate-600",
+      link: "text-amber-600 underline-offset-4 hover:underline",
     }
 
     const sizes = {

@@ -24,6 +24,21 @@ public class TripController {
         return ResponseEntity.ok(service.getAllTrips());
     }
 
+    @GetMapping("/driver/{id}")
+    public ResponseEntity<List<Trip>> getTripsByDriver(@PathVariable Integer id) {
+        return ResponseEntity.ok(service.getTripsByDriver(id));
+    }
+
+    @GetMapping("/requester/{id}")
+    public ResponseEntity<List<Trip>> getTripsByRequester(@PathVariable Integer id) {
+        return ResponseEntity.ok(service.getTripsByRequester(id));
+    }
+
+    @GetMapping("/status/{status}")
+    public ResponseEntity<List<Trip>> getTripsByStatus(@PathVariable String status) {
+        return ResponseEntity.ok(service.getTripsByStatus(com.vfms.trip.model.TripStatus.valueOf(status)));
+    }
+
     /**
      * Retrieves a trip by ID.
      * 
