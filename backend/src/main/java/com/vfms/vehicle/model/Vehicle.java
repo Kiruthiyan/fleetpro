@@ -37,4 +37,7 @@ public class Vehicle {
     private String fuelLevel;
 
     private LocalDate lastServiceDate;
+
+    // Odometer reading in km
+    private Double currentOdometer;
 }

@@ -84,6 +84,12 @@ export default function SlidingAuthPage({ initialMode = "login" }: SlidingAuthPa
             // Store JWT and User data
             authService.setAuth(authData);
 
+            // Check if password change is required
+            if (authData.passwordChangeRequired) {
+                router.push("/auth/change-password");
+                return;
+            }
+
             // Trigger redirection based on role embedded in JWT
             redirectByRole(authData.role);
         } catch (err: any) {

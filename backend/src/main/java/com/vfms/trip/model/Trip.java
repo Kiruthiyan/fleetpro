@@ -43,4 +43,9 @@ public class Trip {
 
     // Distance string e.g. "32 km" (from frontend mock)
     private String distance;
+
+    private Double startOdometer;
+    private Double endOdometer;
+    private Double fuelConsumed; // in Liters
+    private String notes;
 }

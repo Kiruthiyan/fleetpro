@@ -84,4 +84,14 @@ public class TripController {
         service.deleteTrip(id);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/{id}/start")
+    public ResponseEntity<Trip> startTrip(@PathVariable Integer id) {
+        return ResponseEntity.ok(service.startTrip(id));
+    }
+
+    @PostMapping("/{id}/complete")
+    public ResponseEntity<Trip> completeTrip(@PathVariable Integer id, @RequestBody com.vfms.trip.dto.TripCompletionRequest request) {
+        return ResponseEntity.ok(service.completeTrip(id, request));
+    }
 }

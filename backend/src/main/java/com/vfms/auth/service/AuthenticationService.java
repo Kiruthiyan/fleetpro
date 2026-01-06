@@ -24,69 +24,49 @@ public class AuthenticationService {
     /**
      * Admin creates a new user (Invite flow).
      */
+    /**
+     * Admin creates a new user (Auto-generate credentials).
+     */
     public AuthenticationResponse signup(RegisterRequest request) {
-        if (repository.findByEmail(request.getEmail()).isPresent()) {
-            throw new RuntimeException("Email already exists");
+        // Auto-generate company email: name.role@fleetpro.com (simplified)
+        String sanitizedName = request.getName().toLowerCase().replaceAll("\\s+", ".");
+        String generatedEmail = sanitizedName + "." + request.getRole().name().toLowerCase() + "@fleetpro.com";
+        // Ensure uniqueness (simple append for MVP)
+        if (repository.findByEmail(generatedEmail).isPresent()) {
+            generatedEmail = sanitizedName + "." + request.getRole().name().toLowerCase() + (int)(Math.random() * 1000) + "@fleetpro.com";
         }
+
+        // Auto-generate password
+        String generatedPassword = "Pass" + (int)(Math.random() * 10000) + "!";
 
         var user = User.builder()
                 .name(request.getName())
-                .email(request.getEmail())
+                .email(generatedEmail)
                 .role(request.getRole())
-                .emailVerified(true) // Auto-verify for now since email service is not live
-                .password(passwordEncoder.encode(request.getPassword() != null ? request.getPassword() : "temp1234")) // Preliminary password
-                .emailVerificationToken(java.util.UUID.randomUUID().toString())
-                .emailVerificationTokenExpiry(java.time.LocalDateTime.now().plusDays(1))
+                .emailVerified(true) // Admin verified
+                .passwordChangeRequired(true) // Force change on first login
+                .password(passwordEncoder.encode(generatedPassword))
                 .build();
 
         repository.save(user);
 
-        // TODO: Send Email with verification token: user.getEmailVerificationToken()
-        // verify-email?token=...
-
         return AuthenticationResponse.builder()
-                .token(null) // No token yet, user must verify
+                .token(null) // No token, just credentials
                 .role(user.getRole().name())
                 .name(user.getName())
                 .email(user.getEmail())
                 .id(user.getId())
+                .generatedPassword(generatedPassword) // Return for Admin to see
                 .build();
     }
 
     public void verifyEmail(String token) {
-        var user = repository.findByEmailVerificationToken(token)
-                .orElseThrow(() -> new RuntimeException("Invalid or expired verification token"));
-
-        if (user.getEmailVerificationTokenExpiry().isBefore(java.time.LocalDateTime.now())) {
-            throw new RuntimeException("Verification token has expired");
-        }
-
-        // Just check validity here, confirmation happens on setPassword
-        repository.save(user);
+        // Legacy or future self-signup flow
     }
 
     public AuthenticationResponse setPassword(String token, String newPassword) {
-        var user = repository.findByEmailVerificationToken(token)
-                .orElseThrow(() -> new RuntimeException("Invalid or expired token"));
-
-        if (user.getEmailVerificationTokenExpiry().isBefore(java.time.LocalDateTime.now())) {
-            throw new RuntimeException("Token has expired");
-        }
-
-        user.setPassword(passwordEncoder.encode(newPassword));
-        user.setEmailVerified(true);
-        user.setEmailVerificationToken(null);
-        user.setEmailVerificationTokenExpiry(null);
-        repository.save(user);
-
-        var jwtToken = jwtService.generateToken(user);
-        return AuthenticationResponse.builder()
-                .token(jwtToken)
-                .role(user.getRole().name())
-                .name(user.getName())
-                .email(user.getEmail())
-                .id(user.getId())
-                .build();
+        // Legacy or future flow
+        return null;
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
@@ -97,12 +77,8 @@ public class AuthenticationService {
         var user = repository.findByEmail(request.getEmail())
                 .orElseThrow();
         
-        /*
-        if (!user.getEmailVerified()) {
-            throw new RuntimeException("Email not verified. Please check your email.");
-        }
-        */
-
+        // No email verification check needed for this flow as admin creates verified users
+        
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
                 .token(jwtToken)
@@ -110,6 +86,7 @@ public class AuthenticationService {
                 .name(user.getName())
                 .email(user.getEmail())
                 .id(user.getId())
+                .passwordChangeRequired(user.getPasswordChangeRequired())
                 .build();
     }
 
@@ -135,6 +112,14 @@ public class AuthenticationService {
         user.setPassword(passwordEncoder.encode(newPassword));
         user.setPasswordResetToken(null);
         user.setPasswordResetTokenExpiry(null);
+        repository.save(user);
+    }
+    public void changePassword(Integer userId, String newPassword) {
+        var user = repository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setPasswordChangeRequired(false);
         repository.save(user);
     }
 }

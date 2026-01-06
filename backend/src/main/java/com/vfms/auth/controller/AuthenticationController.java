@@ -64,4 +64,9 @@ public class AuthenticationController {
         service.resetPassword(request.getToken(), request.getPassword());
         return ResponseEntity.ok("Password has been reset");
     }
+    @PostMapping("/change-password")
+    public ResponseEntity<String> changePassword(@RequestBody com.vfms.auth.dto.ChangePasswordRequest request) {
+        service.changePassword(request.getUserId(), request.getNewPassword());
+        return ResponseEntity.ok("Password changed successfully");
+    }
 }

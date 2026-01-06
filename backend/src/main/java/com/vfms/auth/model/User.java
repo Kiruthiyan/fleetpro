@@ -47,6 +47,9 @@ public class User implements UserDetails {
     @Builder.Default
     private Boolean emailVerified = false;
 
+    @Builder.Default
+    private Boolean passwordChangeRequired = false;
+
     private String emailVerificationToken;
     private java.time.LocalDateTime emailVerificationTokenExpiry;
 

@@ -16,4 +16,6 @@ public class AuthenticationResponse {
     private String name;
     private String email;
     private Integer id;
+    private String generatedPassword; // Only for admin user creation response
+    private boolean passwordChangeRequired;
 }

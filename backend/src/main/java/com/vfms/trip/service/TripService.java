@@ -52,4 +52,44 @@ public class TripService {
     public void deleteTrip(Integer id) {
         repository.deleteById(id);
     }
+
+    public Trip startTrip(Integer id) {
+        Trip trip = getTripById(id);
+        if (trip.getStatus() != com.vfms.trip.model.TripStatus.ASSIGNED) {
+            throw new RuntimeException("Only ASSIGNED trips can be started");
+        }
+        trip.setStatus(com.vfms.trip.model.TripStatus.STARTED);
+        trip.setStartTime(java.time.LocalDateTime.now());
+        
+        // Update vehicle status to IN_USE
+        if (trip.getVehicle() != null) {
+            trip.getVehicle().setStatus("IN_USE");
+            // Set start odometer from current vehicle odometer
+            trip.setStartOdometer(trip.getVehicle().getCurrentOdometer());
+        }
+
+        return repository.save(trip);
+    }
+    
+    public Trip completeTrip(Integer id, com.vfms.trip.dto.TripCompletionRequest request) {
+        Trip trip = getTripById(id);
+         if (trip.getStatus() != com.vfms.trip.model.TripStatus.STARTED) {
+            throw new RuntimeException("Only STARTED trips can be completed");
+        }
+        
+        trip.setStatus(com.vfms.trip.model.TripStatus.COMPLETED);
+        trip.setEndTime(java.time.LocalDateTime.now());
+        trip.setEndOdometer(request.getEndOdometer());
+        trip.setFuelConsumed(request.getFuelConsumed());
+        trip.setNotes(request.getNotes());
+        
+        // Update vehicle details
+        if (trip.getVehicle() != null) {
+            trip.getVehicle().setStatus("AVAILABLE");
+            trip.getVehicle().setCurrentOdometer(request.getEndOdometer());
+            // Could also update fuel level logic here if we had tank capacity
+        }
+        
+        return repository.save(trip);
+    }
 }
