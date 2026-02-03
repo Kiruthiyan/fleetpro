@@ -23,9 +23,9 @@ public class UserService {
 
     public User updateUser(Integer id, User userDetails) {
         User user = getUserById(id);
-        user.setName(userDetails.getName());
-        user.setEmail(userDetails.getEmail());
-        user.setRole(userDetails.getRole());
+        if (userDetails.getName() != null) user.setName(userDetails.getName());
+        if (userDetails.getEmail() != null) user.setEmail(userDetails.getEmail());
+        if (userDetails.getRole() != null) user.setRole(userDetails.getRole());
         // Do not update password here
         return repository.save(user);
     }

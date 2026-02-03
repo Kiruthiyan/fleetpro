@@ -28,10 +28,11 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    if (error.response?.status === 401 || error.response?.status === 403) {
+      // Auto-logout on 401 (Unauthorized) or 403 (Forbidden/Invalid Token)
       authService.clearAuth()
       if (typeof window !== "undefined") {
-        window.location.href = "/login"
+        window.location.href = "/auth/login"
       }
     }
     return Promise.reject(error)

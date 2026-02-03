@@ -4,17 +4,14 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { motion } from "framer-motion";
 import {
     User,
     Lock,
     Bell,
-    Save,
     Shield,
     Mail,
     Smartphone,
-    LogOut,
-    CheckCircle2
+    LogOut
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -38,6 +35,7 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/components/ui/use-toast";
 import { authService } from "@/lib/auth";
+import api from "@/lib/api";
 
 // --- VALIDATION SCHEMAS ---
 const profileSchema = z.object({
@@ -54,7 +52,7 @@ const securitySchema = z.object({
     path: ["confirmPassword"],
 });
 
-export default function SettingsPage() {
+export default function ProfilePage() {
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
 
@@ -106,8 +104,6 @@ export default function SettingsPage() {
                 description: "Your profile information has been saved successfully.",
                 className: "bg-green-600 text-white border-none"
             });
-
-            // Dispatch a storage event or force reload if needed, but for now this is sufficient
         } catch (error: any) {
             toast({
                 title: "Error",
@@ -145,12 +141,17 @@ export default function SettingsPage() {
         }
     };
 
+    const handleLogout = () => {
+        authService.clearAuth();
+        window.location.href = "/auth/login";
+    };
+
     return (
-        <div className="space-y-6 animate-fade-in pb-10">
+        <div className="space-y-6 animate-in fade-in duration-500 pb-10 m-8">
             {/* Header */}
             <div>
-                <h1 className="text-3xl font-black text-slate-900 tracking-tight">Settings</h1>
-                <p className="text-slate-500 font-medium">Manage your account preferences and security.</p>
+                <h1 className="text-3xl font-black text-slate-900 tracking-tight">My Profile</h1>
+                <p className="text-slate-500 font-medium">Manage your personal information and security settings.</p>
             </div>
 
             <Tabs defaultValue="general" className="w-full space-y-6">
@@ -171,9 +172,9 @@ export default function SettingsPage() {
                     <Card className="border-slate-200 shadow-sm rounded-2xl overflow-hidden">
                         <CardHeader className="bg-slate-50/50 border-b border-slate-100 px-8 py-6">
                             <CardTitle className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                                <User className="w-5 h-5 text-amber-500" /> Profile Information
+                                <User className="w-5 h-5 text-amber-500" /> Account Details
                             </CardTitle>
-                            <CardDescription className="font-medium text-slate-500">Update your account's profile information and email address.</CardDescription>
+                            <CardDescription className="font-medium text-slate-500">View and update your personal details.</CardDescription>
                         </CardHeader>
                         <CardContent className="p-8 space-y-6">
                             <form onSubmit={profileForm.handleSubmit(onProfileSubmit)} className="space-y-6 max-w-xl">
@@ -205,7 +206,6 @@ export default function SettingsPage() {
                                         {isLoading && <span className="animate-spin mr-2">⏳</span>}
                                         Save Changes
                                     </Button>
-                                    <p className="text-xs text-slate-400">Last saved: Just now</p>
                                 </div>
                             </form>
                         </CardContent>
@@ -219,7 +219,7 @@ export default function SettingsPage() {
                             <CardTitle className="text-xl font-bold text-slate-900 flex items-center gap-2">
                                 <Shield className="w-5 h-5 text-amber-500" /> Password & Security
                             </CardTitle>
-                            <CardDescription className="font-medium text-slate-500">Manage your password and security ensure your account is safe.</CardDescription>
+                            <CardDescription className="font-medium text-slate-500">Manage your password and security to ensure your account is safe.</CardDescription>
                         </CardHeader>
                         <CardContent className="p-8 space-y-8">
                             <form onSubmit={securityForm.handleSubmit(onSecuritySubmit)} className="space-y-6 max-w-xl">
@@ -258,11 +258,11 @@ export default function SettingsPage() {
 
                             <div className="bg-red-50 border border-red-100 rounded-xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
                                 <div>
-                                    <h4 className="font-bold text-red-900 mb-1">Log out of all devices</h4>
-                                    <p className="text-sm text-red-700/80 font-medium">This will sign you out of all other active sessions.</p>
+                                    <h4 className="font-bold text-red-900 mb-1">Sign Out</h4>
+                                    <p className="text-sm text-red-700/80 font-medium">Log out of your account on this device.</p>
                                 </div>
-                                <Button variant="outline" className="text-red-600 border-red-200 hover:bg-red-100 font-bold whitespace-nowrap">
-                                    <LogOut className="w-4 h-4 mr-2" /> Log Out All
+                                <Button onClick={handleLogout} variant="outline" className="text-red-600 border-red-200 hover:bg-red-100 font-bold whitespace-nowrap">
+                                    <LogOut className="w-4 h-4 mr-2" /> Sign Out
                                 </Button>
                             </div>
                         </CardContent>
@@ -274,9 +274,9 @@ export default function SettingsPage() {
                     <Card className="border-slate-200 shadow-sm rounded-2xl overflow-hidden">
                         <CardHeader className="bg-slate-50/50 border-b border-slate-100 px-8 py-6">
                             <CardTitle className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                                <Bell className="w-5 h-5 text-amber-500" /> Notification Preferences
+                                <Bell className="w-5 h-5 text-amber-500" /> Notifications
                             </CardTitle>
-                            <CardDescription className="font-medium text-slate-500">Choose how and when you want to be notified.</CardDescription>
+                            <CardDescription className="font-medium text-slate-500">Manage your notification preferences.</CardDescription>
                         </CardHeader>
                         <CardContent className="p-8 space-y-6">
                             <div className="space-y-6 max-w-2xl">
@@ -284,9 +284,9 @@ export default function SettingsPage() {
                                     <div className="space-y-0.5">
                                         <div className="flex items-center gap-2 mb-1">
                                             <Mail className="w-4 h-4 text-slate-400" />
-                                            <Label className="text-base font-bold text-slate-900">Email Notifications</Label>
+                                            <Label className="text-base font-bold text-slate-900">Email Alerts</Label>
                                         </div>
-                                        <p className="text-sm text-slate-500 font-medium">Receive daily digests of fleet activity and alerts.</p>
+                                        <p className="text-sm text-slate-500 font-medium">Receive important updates about your trips.</p>
                                     </div>
                                     <Switch defaultChecked />
                                 </div>
@@ -295,28 +295,14 @@ export default function SettingsPage() {
                                     <div className="space-y-0.5">
                                         <div className="flex items-center gap-2 mb-1">
                                             <Smartphone className="w-4 h-4 text-slate-400" />
-                                            <Label className="text-base font-bold text-slate-900">Push Notifications</Label>
+                                            <Label className="text-base font-bold text-slate-900">SMS Alerts</Label>
                                         </div>
-                                        <p className="text-sm text-slate-500 font-medium">Receive real-time alerts for critical maintenance issues.</p>
+                                        <p className="text-sm text-slate-500 font-medium">Get text messages for immediate notifications.</p>
                                     </div>
                                     <Switch defaultChecked />
                                 </div>
-                                <Separator />
-                                <div className="flex items-start justify-between space-x-4">
-                                    <div className="space-y-0.5">
-                                        <div className="flex items-center gap-2 mb-1">
-                                            <Shield className="w-4 h-4 text-slate-400" />
-                                            <Label className="text-base font-bold text-slate-900">Security Alerts</Label>
-                                        </div>
-                                        <p className="text-sm text-slate-500 font-medium">Get notified about new sign-ins or suspicious activity.</p>
-                                    </div>
-                                    <Switch defaultChecked disabled />
-                                </div>
                             </div>
                         </CardContent>
-                        <CardFooter className="bg-slate-50/50 border-t border-slate-100 px-8 py-4 flex justify-end">
-                            <Button variant="ghost" className="text-slate-500 font-bold hover:text-slate-900">Reset to Defaults</Button>
-                        </CardFooter>
                     </Card>
                 </TabsContent>
             </Tabs>

@@ -114,7 +114,7 @@ export default function DriversPage() {
                 </div>
                 <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
                     <DialogTrigger asChild>
-                        <Button className="bg-amber-500 hover:bg-amber-600 text-white shadow-lg shadow-amber-500/20 font-bold rounded-xl px-6">
+                        <Button className="bg-slate-900 hover:bg-slate-800 text-white shadow-lg shadow-slate-900/20 font-bold rounded-xl px-6">
                             <Plus className="mr-2 h-5 w-5" /> Add Driver
                         </Button>
                     </DialogTrigger>
@@ -127,34 +127,34 @@ export default function DriversPage() {
                         </DialogHeader>
                         <form onSubmit={handleSubmit(onAddSubmit)} className="space-y-6 pt-4">
                             <div className="space-y-2">
-                                <label className="text-xs font-bold uppercase text-slate-500 tracking-wider">Full Name</label>
-                                <Input placeholder="e.g. Michael Racer" {...register("fullName")} className="h-11 rounded-xl bg-slate-50 border-slate-200 focus:bg-white transition-all" />
+                                <label className="text-sm font-bold text-slate-700">Full Name</label>
+                                <Input placeholder="e.g. Michael Racer" {...register("fullName")} className="h-11 rounded-xl bg-white text-slate-900 border-slate-200 focus:border-slate-400 transition-all" />
                                 {errors.fullName && <p className="text-xs text-red-500 font-bold mt-1">{errors.fullName.message}</p>}
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-xs font-bold uppercase text-slate-500 tracking-wider">Email Address</label>
-                                <Input placeholder="michael@fleet.com" type="email" {...register("email")} className="h-11 rounded-xl bg-slate-50 border-slate-200 focus:bg-white transition-all" />
+                                <label className="text-sm font-bold text-slate-700">Email Address</label>
+                                <Input placeholder="michael@fleet.com" type="email" {...register("email")} className="h-11 rounded-xl bg-white text-slate-900 border-slate-200 focus:border-slate-400 transition-all" />
                                 {errors.email && <p className="text-xs text-red-500 font-bold mt-1">{errors.email.message}</p>}
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <label className="text-xs font-bold uppercase text-slate-500 tracking-wider">License Number</label>
-                                    <Input placeholder="DL-XXXXXX" {...register("licenseNumber")} className="h-11 rounded-xl bg-slate-50 border-slate-200 focus:bg-white transition-all" />
+                                    <label className="text-sm font-bold text-slate-700">License Number</label>
+                                    <Input placeholder="DL-XXXXXX" {...register("licenseNumber")} className="h-11 rounded-xl bg-white text-slate-900 border-slate-200 focus:border-slate-400 transition-all" />
                                     {errors.licenseNumber && <p className="text-xs text-red-500 font-bold mt-1">{errors.licenseNumber.message}</p>}
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-xs font-bold uppercase text-slate-500 tracking-wider">License Expiry</label>
-                                    <Input type="date" {...register("licenseExpiry")} className="h-11 rounded-xl bg-slate-50 border-slate-200 focus:bg-white transition-all" />
+                                    <label className="text-sm font-bold text-slate-700">License Expiry</label>
+                                    <Input type="date" {...register("licenseExpiry")} className="h-11 rounded-xl bg-white text-slate-900 border-slate-200 focus:border-slate-400 transition-all" />
                                     {errors.licenseExpiry && <p className="text-xs text-red-500 font-bold mt-1">{errors.licenseExpiry.message}</p>}
                                 </div>
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-xs font-bold uppercase text-slate-500 tracking-wider">Current Status</label>
+                                <label className="text-sm font-bold text-slate-700">Current Status</label>
                                 <Select onValueChange={(val) => setValue("status", val as any)} defaultValue="AVAILABLE">
-                                    <SelectTrigger className="h-11 rounded-xl bg-slate-50 border-slate-200 focus:bg-white transition-all">
+                                    <SelectTrigger className="h-11 rounded-xl bg-white text-slate-900 border-slate-200 focus:border-slate-400 transition-all">
                                         <SelectValue placeholder="Select Status" />
                                     </SelectTrigger>
                                     <SelectContent className="rounded-xl shadow-xl border-slate-100">
