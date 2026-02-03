@@ -38,6 +38,7 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/components/ui/use-toast";
 import { authService } from "@/lib/auth";
+import api from "@/lib/api";
 
 // --- VALIDATION SCHEMAS ---
 const profileSchema = z.object({
