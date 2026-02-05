@@ -98,7 +98,13 @@ public class AuthenticationService {
         user.setPasswordResetTokenExpiry(java.time.LocalDateTime.now().plusHours(1));
         repository.save(user);
         
-        // TODO: Send email
+        // For MVP/Dev: Log the link to console since no Email Service is configured
+        String resetLink = "https://fleetpro-frontend.vercel.app/auth/reset-password?token=" + user.getPasswordResetToken();
+        System.out.println("==================================================");
+        System.out.println("PASSWORD RESET REQUEST FOR: " + email);
+        System.out.println("Reset Link: " + resetLink);
+        System.out.println("Token: " + user.getPasswordResetToken());
+        System.out.println("==================================================");
     }
 
     public void resetPassword(String token, String newPassword) {

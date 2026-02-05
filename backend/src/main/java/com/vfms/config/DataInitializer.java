@@ -19,16 +19,19 @@ public class DataInitializer {
     @Bean
     public CommandLineRunner commandLineRunner() {
         return args -> {
-            if (repository.findByEmail("admin@fleet.com").isEmpty()) {
+            String adminEmail = System.getenv("ADMIN_EMAIL") != null ? System.getenv("ADMIN_EMAIL") : "admin@fleet.com";
+            String adminPassword = System.getenv("ADMIN_PASSWORD") != null ? System.getenv("ADMIN_PASSWORD") : "password";
+
+            if (repository.findByEmail(adminEmail).isEmpty()) {
                 var admin = User.builder()
                         .name("System Administrator")
-                        .email("admin@fleet.com")
-                        .password(passwordEncoder.encode("password"))
+                        .email(adminEmail)
+                        .password(passwordEncoder.encode(adminPassword))
                         .role(Role.ADMIN)
                         .emailVerified(true)
                         .build();
                 repository.save(admin);
-                System.out.println("Default Admin created: admin@fleet.com / password");
+                System.out.println("Default Admin created: " + adminEmail);
             }
         };
     }
